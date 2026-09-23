@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 /// Modelo que representa un tema de capacitación ambiental
-/// Contiene la información del PDF "Capacitación Ambiental para Clientes"
 class EnvironmentalTopic {
   final String id;
   final String title;
