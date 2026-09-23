@@ -262,7 +262,9 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
             child: Icon(
               porcentaje >= 70 ? Icons.emoji_events : Icons.school,
               size: 50,
-              color: porcentaje >= 70 ? Colors.green[700] : Colors.orange[700],
+              color: porcentaje >= 70
+                  ? const Color.fromARGB(255, 68, 219, 76)
+                  : Colors.orange[700],
             ),
           ),
           const SizedBox(height: 24),
