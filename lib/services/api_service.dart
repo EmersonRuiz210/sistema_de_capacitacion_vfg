@@ -11,7 +11,6 @@ class ApiService {
   static String? _token;
 
   // GESTIÓN DEL TOKEN
-
   /// Cargar token guardado al iniciar la app
   static Future<void> loadToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -43,7 +42,6 @@ class ApiService {
   };
 
   // MÉTODOS HTTP GENÉRICOS
-
   /// Petición GET
   static Future<dynamic> get(String endpoint) async {
     try {
@@ -92,7 +90,6 @@ class ApiService {
   }
 
   // AUTENTICACIÓN
-
   /// Login
   static Future<Map<String, dynamic>> login(
     String email,
@@ -143,7 +140,6 @@ class ApiService {
   }
 
   // CURSOS
-
   /// Obtener todos los cursos
   static Future<List<dynamic>> getCourses() async {
     final data = await get('/courses');
@@ -163,7 +159,6 @@ class ApiService {
   }
 
   // PROGRESO
-
   /// Guardar progreso de un módulo
   static Future<void> saveProgress(int moduleId, double percentage) async {
     await post('/progress', {
@@ -181,5 +176,40 @@ class ApiService {
   static Future<List<dynamic>> getMyProgress() async {
     final data = await get('/progress');
     return data['progress'] ?? [];
+  }
+
+  // EVALUACIONES
+  /// Obtener evaluación de un módulo
+  static Future<Map<String, dynamic>> getModuleEvaluation(int moduleId) async {
+    final data = await get('/modules/$moduleId/evaluation');
+    return data['evaluation'];
+  }
+
+  /// Guardar intento de evaluación
+  /// [evaluationId] ID de la evaluación
+  /// [puntaje] Puntaje obtenido (ej: 75.0)
+  /// [respuestas] Lista de respuestas del usuario (opcional)
+  static Future<Map<String, dynamic>> saveAttempt({
+    required int evaluationId,
+    required double puntaje,
+    List<Map<String, dynamic>>? respuestas,
+  }) async {
+    final data = await post('/evaluations/$evaluationId/attempt', {
+      'puntaje_obtenido': puntaje,
+      if (respuestas != null) 'respuestas': respuestas,
+    });
+    return data;
+  }
+
+  /// Obtener mis intentos de una evaluación
+  static Future<List<dynamic>> getMyAttempts(int evaluationId) async {
+    final data = await get('/evaluations/$evaluationId/attempts');
+    return data['attempts'] ?? [];
+  }
+
+  /// Obtener todo mi historial de intentos
+  static Future<List<dynamic>> getAllMyAttempts() async {
+    final data = await get('/evaluations/my-attempts');
+    return data['attempts'] ?? [];
   }
 }
