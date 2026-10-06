@@ -1,22 +1,28 @@
+// PUNTO DE ENTRADA DE LA APLICACIÓN
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'screens/main_screens.dart';
+import 'screens/login_screen.dart';
+import 'screens/main_screen.dart';
+import 'services/api_service.dart';
 import 'utils/colors.dart';
 
-/// Punto de entrada principal de la aplicación
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Cargar token guardado (si existe)
+  await ApiService.loadToken();
+
   runApp(const FinancialEducationApp());
 }
 
-/// Widget raíz de la aplicación de Capacitaciones VFG
 class FinancialEducationApp extends StatelessWidget {
   const FinancialEducationApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Sistema de Capacitación',
+      title: 'Capacitaciones VFG',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: AppColors.primaryBlue,
@@ -32,8 +38,8 @@ class FinancialEducationApp extends StatelessWidget {
           foregroundColor: AppColors.primaryBlue,
         ),
       ),
-      // Pantalla inicial: menú de módulos
-      home: const MainScreen(),
+      // Si hay token → MainScreen, si no → LoginScreen
+      home: ApiService.isLoggedIn ? const MainScreen() : const LoginScreen(),
     );
   }
 }
