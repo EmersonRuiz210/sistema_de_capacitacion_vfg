@@ -362,6 +362,7 @@ class _MainScreenState extends State<MainScreen> {
           moduleTitle: course['titulo'] ?? 'Curso',
           moduleColor: courseColor,
           topics: topics,
+          courseId: course['id_curso'],
         ),
       ),
     );

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../services/api_service.dart';
+
 /// Pantalla interactiva GENÉRICA con preguntas
 /// Funciona para cualquier módulo (financiero o ambiental)
 class InteractiveScreen extends StatefulWidget {
   final List<dynamic> topics;
   final Color moduleColor;
+  final int moduleId;
 
   const InteractiveScreen({
     super.key,
     required this.topics,
     required this.moduleColor,
+    required this.moduleId,
   });
 
   @override
@@ -21,6 +25,9 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
   int score = 0;
   bool showResults = false;
   List<bool> answersStatus = [];
+  bool _savingAttempt = false; // Mientras se guarda en el backend
+  bool _attemptSaved = false; // Ya se guardó exitosamente
+  String? _saveError; // Error al guardar (si lo hay)
 
   // Lista de preguntas dinámica basada en los temas recibidos
   late List<Map<String, dynamic>> questions;
@@ -208,7 +215,8 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
     });
   }
 
-  void handleAnswer(int selectedIndex) {
+  /// Maneja la selección de una respuesta
+  void handleAnswer(int selectedIndex) async {
     final isCorrect =
         selectedIndex == questions[currentQuestionIndex]['correct'];
 
@@ -217,16 +225,69 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
       if (isCorrect) score++;
     });
 
-    Future.delayed(const Duration(milliseconds: 500), () {
+    // Avanzar a la siguiente pregunta o mostrar resultados
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      if (!mounted) return;
+
+      if (currentQuestionIndex < questions.length - 1) {
+        setState(() => currentQuestionIndex++);
+      } else {
+        setState(() => showResults = true);
+        //Guardar el intento cuando se completa el quiz
+        await _saveAttemptToBackend();
+      }
+    });
+  }
+
+  /// Guarda el intento en el backend
+  Future<void> _saveAttemptToBackend() async {
+    // No guardar si ya se guardó antes
+    if (_attemptSaved) return;
+
+    setState(() {
+      _savingAttempt = true;
+      _saveError = null;
+    });
+
+    try {
+      // 1. Obtener el ID de la evaluación del módulo actual
+      final evaluation = await ApiService.getModuleEvaluation(widget.moduleId);
+      final evaluationId = evaluation['id_evaluacion'];
+      final puntajeMaximo = (evaluation['puntaje_maximo'] as num).toDouble();
+
+      // 2. Calcular puntaje obtenido (regla de 3)
+      final porcentajeCorrecto = score / questions.length;
+      final puntajeObtenido = porcentajeCorrecto * puntajeMaximo;
+
+      // 3. Enviar al backend
+      final result = await ApiService.saveAttempt(
+        evaluationId: evaluationId,
+        puntaje: puntajeObtenido,
+      );
+
       if (!mounted) return;
       setState(() {
-        if (currentQuestionIndex < questions.length - 1) {
-          currentQuestionIndex++;
-        } else {
-          showResults = true;
-        }
+        _attemptSaved = true;
+        _savingAttempt = false;
       });
-    });
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Intento guardado. Progreso: ${result['progreso_actualizado'].toStringAsFixed(1)}%',
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _saveError = e.toString().replaceAll('Exception: ', '');
+        _savingAttempt = false;
+      });
+    }
   }
 
   @override
@@ -281,6 +342,90 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
             'Puntuación: $score / ${questions.length}',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
           ),
+
+          // Indicador de guardado
+          if (_savingAttempt)
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 8),
+                  Text('Guardando resultado...'),
+                ],
+              ),
+            ),
+
+          if (_attemptSaved)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.green[300]!),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.cloud_done, color: Colors.green, size: 18),
+                    SizedBox(width: 6),
+                    Text(
+                      'Guardado en tu historial',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          if (_saveError != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.orange[300]!),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber, color: Colors.orange),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'No se pudo guardar el resultado',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            _saveError!,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
           const SizedBox(height: 4),
           Text(
             '$porcentaje% de respuestas correctas',
@@ -312,7 +457,7 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
                       ),
                     ),
                     Text(
-                      porcentaje >= 70 ? '✅ Correcto' : '❌ Revisa',
+                      porcentaje >= 70 ? 'Correcto' : 'Revisa',
                       style: TextStyle(
                         fontSize: 12,
                         color: porcentaje >= 70

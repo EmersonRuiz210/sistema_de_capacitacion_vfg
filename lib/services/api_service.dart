@@ -194,10 +194,15 @@ class ApiService {
     required double puntaje,
     List<Map<String, dynamic>>? respuestas,
   }) async {
-    final data = await post('/evaluations/$evaluationId/attempt', {
-      'puntaje_obtenido': puntaje,
-      if (respuestas != null) 'respuestas': respuestas,
-    });
+    // Construir el body dinámicamente
+    final Map<String, dynamic> body = {'puntaje_obtenido': puntaje};
+
+    // Agregar respuestas solo si no son null
+    if (respuestas != null) {
+      body['respuestas'] = respuestas;
+    }
+
+    final data = await post('/evaluations/$evaluationId/attempt', body);
     return data;
   }
 

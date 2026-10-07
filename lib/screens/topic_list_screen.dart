@@ -1,20 +1,22 @@
+// PANTALLA GENÉRICA DE LISTA DE TEMAS
+
 import 'package:flutter/material.dart';
 
 import '../widgets/custom_button.dart';
 import 'interactive.dart';
 
-/// Pantalla GENÉRICA que lista los temas de un módulo
-/// Funciona tanto para financiero como ambiental
 class TopicListScreen extends StatelessWidget {
   final String moduleTitle;
   final Color moduleColor;
-  final List<dynamic> topics; // Puede ser FinancialTopic o EnvironmentalTopic
+  final List<dynamic> topics;
+  final int courseId;
 
   const TopicListScreen({
     super.key,
     required this.moduleTitle,
     required this.moduleColor,
     required this.topics,
+    required this.courseId,
   });
 
   @override
@@ -36,7 +38,7 @@ class TopicListScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-            // Cabecera con botón interactivo
+            // Cabecera
             Container(
               padding: const EdgeInsets.all(20),
               width: double.infinity,
@@ -57,6 +59,7 @@ class TopicListScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 15, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 16),
+                  // Botón para iniciar el módulo interactivo
                   CustomButton(
                     text: 'Iniciar Módulo Interactivo',
                     icon: Icons.play_circle_filled,
@@ -67,6 +70,7 @@ class TopicListScreen extends StatelessWidget {
                           builder: (context) => InteractiveScreen(
                             topics: topics,
                             moduleColor: moduleColor,
+                            moduleId: courseId, // PASAMOS EL ID
                           ),
                         ),
                       );
@@ -92,7 +96,7 @@ class TopicListScreen extends StatelessWidget {
     );
   }
 
-  /// Construye una tarjeta de tema (funciona con cualquier tipo de tema)
+  /// Construye la tarjeta de un tema
   Widget _buildTopicCard(BuildContext context, dynamic topic) {
     return Card(
       elevation: 2,
@@ -105,7 +109,6 @@ class TopicListScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Icono del tema
               Container(
                 width: 60,
                 height: 60,
@@ -116,7 +119,6 @@ class TopicListScreen extends StatelessWidget {
                 child: Icon(topic.icon, color: topic.color, size: 30),
               ),
               const SizedBox(width: 16),
-              // Título y subtítulo
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +147,7 @@ class TopicListScreen extends StatelessWidget {
     );
   }
 
-  /// Muestra el detalle de un tema en un bottom sheet
+  /// Muestra el detalle del tema
   void _showTopicDetail(BuildContext context, dynamic topic) {
     showModalBottomSheet(
       context: context,
@@ -165,7 +167,6 @@ class TopicListScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Indicador de arrastre
                   Center(
                     child: Container(
                       width: 40,
@@ -177,7 +178,6 @@ class TopicListScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Título con icono
                   Row(
                     children: [
                       Icon(topic.icon, color: topic.color, size: 32),
@@ -239,7 +239,6 @@ class TopicListScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Caja de ejemplo
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -273,7 +272,6 @@ class TopicListScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Consejo
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -297,7 +295,6 @@ class TopicListScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Pregunta al cliente
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
