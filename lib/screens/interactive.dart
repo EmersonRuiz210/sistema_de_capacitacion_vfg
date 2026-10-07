@@ -27,9 +27,9 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
   List<bool> answersStatus = [];
   bool _savingAttempt = false; // Mientras se guarda en el backend
   bool _attemptSaved = false; // Ya se guardó exitosamente
-  String? _saveError; // Error al guardar (si lo hay)
+  String? _saveError; // Error al guardar
 
-  // Lista de preguntas dinámica basada en los temas recibidos
+  // Lista de preguntas dinámica basada en los temas
   late List<Map<String, dynamic>> questions;
 
   @override
