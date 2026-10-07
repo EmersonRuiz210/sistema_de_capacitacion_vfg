@@ -217,4 +217,11 @@ class ApiService {
     final data = await get('/evaluations/my-attempts');
     return data['attempts'] ?? [];
   }
+
+  // RESUMEN DE PROGRESO
+  /// Obtener el resumen completo del progreso del usuario
+  /// Incluye: progreso por curso, estadísticas generales y últimos intentos
+  static Future<Map<String, dynamic>> getProgressSummary() async {
+    return await get('/progress/summary');
+  }
 }
