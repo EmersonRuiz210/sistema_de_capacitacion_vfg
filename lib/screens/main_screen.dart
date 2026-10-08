@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'topic_list_screen.dart';
 import 'login_screen.dart';
+import 'progress_screen.dart';
 import '../models/financial.dart';
 import '../models/ambiental.dart';
 import '../models/empoderamiento.dart';
@@ -95,6 +96,21 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text('Capacitaciones VFG'),
         actions: [
+          //Botón para ver "Mi Progreso"
+          IconButton(
+            icon: const Icon(Icons.insights),
+            tooltip: 'Mi Progreso',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProgressScreen()),
+              ).then((_) {
+                // Al volver, recargar datos por si hubo cambios
+                _loadData();
+              });
+            },
+          ),
+          // Botón de cerrar sesión
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Cerrar sesión',
