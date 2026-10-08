@@ -4,31 +4,7 @@ description: "App para Sistema de Capacitacion"
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
-#ESPAÑOL
-# Lo siguiente define la versión y el número de compilación de la aplicación.
-# Un número de versión consta de tres números separados por puntos, como 1.2.43,
-# seguido de un número de compilación opcional separado por un signo +.
-# Tanto la versión como el número de compilación pueden sobrescribirse al ejecutar
-# flutter build especificando --build-name y --build-number, respectivamente.
-# En Android, build-name se utiliza como versionName y build-number como versionCode.
-# Más información sobre el versionado en Android en https://developer.android.com/studio/publish/versioning
-# En iOS, build-name se utiliza como CFBundleShortVersionString y build-number como CFBundleVersion.
-# Más información sobre el versionado en iOS en
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# En Windows, build-name se utiliza para las partes mayor, menor y de parche
-# de las versiones del producto y del archivo, mientras que build-number se usa como sufijo de compilación.
+
 
 version: 1.0.0+1
 
