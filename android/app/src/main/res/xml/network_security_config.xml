@@ -3,7 +3,7 @@
     <!-- Permitir HTTP sin cifrar solo en desarrollo -->
     <domain-config cleartextTrafficPermitted="true">
         <!-- IP local de tu PC -->
-        <domain includeSubdomains="true">192.168.0.16</domain>
+        <domain includeSubdomains="true">192.168.x.x</domain>
         
         <!-- Para cualquier otra IP local (opcional) -->
         <domain includeSubdomains="true">192.168.0.1</domain>

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
+import '../widgets/progress_charts.dart';
 import '../utils/colors.dart';
 
 class ProgressScreen extends StatefulWidget {
@@ -45,6 +46,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
         isLoading = false;
       });
     }
+  }
+
+  /// Calcula el progreso general (promedio de todos los cursos)
+  double _calculateOverallProgress(List<dynamic> cursos) {
+    if (cursos.isEmpty) return 0;
+    double total = 0;
+    for (final curso in cursos) {
+      total +=
+          double.tryParse(curso['promedio_progreso']?.toString() ?? '0') ?? 0;
+    }
+    return total / cursos.length;
   }
 
   @override
@@ -192,6 +204,87 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 32),
+
+            // GRÁFICOS
+            const Text(
+              'Gráficos de progreso',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A5276),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Gráfico circular con progreso general
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: GeneralProgressChart(
+                  porcentaje: _calculateOverallProgress(cursos),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Gráfico de barras con progreso por curso
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: CoursesBarChart(
+                  courses: cursos.map((c) {
+                    final colorMap = {
+                      1: const Color(0xFF1A5276),
+                      2: const Color(0xFF27AE60),
+                      3: const Color(0xFF16A085),
+                    };
+                    return {
+                      'name': c['curso_titulo'] ?? 'Curso',
+                      'progress':
+                          double.tryParse(
+                            c['promedio_progreso']?.toString() ?? '0',
+                          ) ??
+                          0,
+                      'color': colorMap[c['id_curso']] ?? AppColors.primaryBlue,
+                    };
+                  }).toList(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Gráfico de línea con evolución
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: ScoreEvolutionChart(
+                  attempts: ultimosIntentos.map((i) {
+                    return {
+                      'date': DateTime.parse(i['fecha_intento'].toString()),
+                      'score':
+                          double.tryParse(
+                            i['puntaje_obtenido']?.toString() ?? '0',
+                          ) ??
+                          0,
+                    };
+                  }).toList(),
+                ),
+              ),
+            ),
+
             const SizedBox(height: 32),
 
             // PROGRESO POR CURSO

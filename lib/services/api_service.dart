@@ -226,4 +226,26 @@ class ApiService {
   static Future<Map<String, dynamic>> getProgressSummary() async {
     return await get('/progress/summary');
   }
+
+  // LOGROS
+  /// Obtener todos los logros con estado del usuario
+  static Future<Map<String, dynamic>> getAllAchievements() async {
+    return await get('/achievements');
+  }
+
+  /// Verificar y otorgar nuevos logros (llamar después de completar un quiz)
+  static Future<Map<String, dynamic>> checkAchievements() async {
+    return await post('/achievements/check', {});
+  }
+
+  /// Obtener logros pendientes de notificar
+  static Future<List<dynamic>> getPendingAchievements() async {
+    final data = await get('/achievements/pending');
+    return data['pendientes'] ?? [];
+  }
+
+  /// Obtener estadísticas de logros
+  static Future<Map<String, dynamic>> getAchievementStats() async {
+    return await get('/achievements/stats');
+  }
 }
