@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/financial.dart';
 
 /// Tarjeta pequeña que muestra el resultado del módulo interactivo
@@ -36,14 +37,12 @@ class InteractiveCard extends StatelessWidget {
             Expanded(
               child: Text(
                 topic.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
             ),
             // Etiqueta de estado
             Text(
-              isCorrect ? '✅ Correcto' : '❌ Revisa',
+              isCorrect ? 'Correcto' : 'Revisa',
               style: TextStyle(
                 fontSize: 12,
                 color: isCorrect ? Colors.green[700] : Colors.red[700],

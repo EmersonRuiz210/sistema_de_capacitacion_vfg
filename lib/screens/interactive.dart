@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
+import '../widgets/achievement_popup.dart';
 
-/// Pantalla interactiva GENÉRICA con preguntas
-/// Funciona para cualquier módulo (financiero o ambiental)
+/// Pantalla interactiva
+///
 class InteractiveScreen extends StatefulWidget {
   final List<dynamic> topics;
   final Color moduleColor;
@@ -264,6 +265,23 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
         evaluationId: evaluationId,
         puntaje: puntajeObtenido,
       );
+
+      //VERIFICAR LOGROS DESPUÉS DE GUARDAR EL INTENTO
+      try {
+        final logrosResult = await ApiService.checkAchievements();
+        final nuevosLogros =
+            logrosResult['nuevos_logros'] as List<dynamic>? ?? [];
+
+        if (!mounted) return;
+
+        if (nuevosLogros.isNotEmpty) {
+          // Mostrar popup de cada logro
+          await AchievementPopup.showMultiple(context, nuevosLogros);
+        }
+      } catch (logrosError) {
+        // No detener la app si falla la verificación de logros
+        debugPrint('Error verificando logros: $logrosError');
+      }
 
       if (!mounted) return;
       setState(() {

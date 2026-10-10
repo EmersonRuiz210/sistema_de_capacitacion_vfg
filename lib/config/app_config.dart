@@ -6,11 +6,11 @@ class AppConfig {
 
   static const String baseUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://192.168.0.12:3000/api',
+    defaultValue: 'http://192.168.0.16:3000/api',
   );
 
   /// Nombre de la app
-  static const String appName = 'Sistema de Capacitacion';
+  static const String appName = 'Sistema de Capacitaciones VFG';
 
   /// Versión de la app
   static const String appVersion = '1.0.0';

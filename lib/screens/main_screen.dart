@@ -6,6 +6,9 @@ import '../services/api_service.dart';
 import 'topic_list_screen.dart';
 import 'login_screen.dart';
 import 'progress_screen.dart';
+import 'achievements_screen.dart';
+import 'admin_dashboard_screen.dart';
+import 'ai_chat_screen.dart';
 import '../models/financial.dart';
 import '../models/ambiental.dart';
 import '../models/empoderamiento.dart';
@@ -96,6 +99,46 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text('Capacitaciones VFG'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.auto_awesome),
+            tooltip: 'Asistente IA',
+            color: Colors.purple,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AiChatScreen()),
+              );
+            },
+          ),
+          //Botón de Admin
+          if (userData != null &&
+              (userData!['rol'] == 'admin' ||
+                  userData!['nombre_rol'] == 'admin'))
+            IconButton(
+              icon: const Icon(Icons.admin_panel_settings),
+              tooltip: 'Panel de Admin',
+              color: Colors.orange[800],
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AdminDashboardScreen(),
+                  ),
+                ).then((_) => _loadData());
+              },
+            ),
+
+          IconButton(
+            icon: const Icon(Icons.emoji_events),
+            tooltip: 'Mis Logros',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+              ).then((_) => _loadData());
+            },
+          ),
+
           //Botón para ver "Mi Progreso"
           IconButton(
             icon: const Icon(Icons.insights),

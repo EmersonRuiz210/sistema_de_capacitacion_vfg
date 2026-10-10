@@ -5,10 +5,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../config/app_config.dart';
+// import '../config/app_config.dart';
 
 class ApiService {
-  static const String baseUrl = AppConfig.baseUrl;
+  static const String baseUrl = 'http://192.168.0.16:3000/api';
 
   static String? _token;
 
@@ -189,8 +189,8 @@ class ApiService {
 
   /// Guardar intento de evaluación
   /// [evaluationId] ID de la evaluación
-  /// [puntaje] Puntaje obtenido (ej: 75.0)
-  /// [respuestas] Lista de respuestas del usuario (opcional)
+  /// [puntaje] Puntaje obtenido
+  /// [respuestas] Lista de respuestas del usuario
   static Future<Map<String, dynamic>> saveAttempt({
     required int evaluationId,
     required double puntaje,
@@ -247,5 +247,48 @@ class ApiService {
   /// Obtener estadísticas de logros
   static Future<Map<String, dynamic>> getAchievementStats() async {
     return await get('/achievements/stats');
+  }
+
+  /// Verificar si el usuario actual es admin
+  static Future<bool> isAdmin() async {
+    final user = await getUserData();
+    return user?['rol'] == 'admin' || user?['nombre_rol'] == 'admin';
+  }
+
+  // ADMINISTRACIÓN
+  /// Obtener todos los usuarios con sus estadísticas
+  static Future<List<dynamic>> getAdminUsers() async {
+    final data = await get('/admin/users');
+    return data['users'] ?? [];
+  }
+
+  /// Obtener detalle completo de un usuario
+  static Future<Map<String, dynamic>> getAdminUserDetail(int userId) async {
+    return await get('/admin/users/$userId');
+  }
+
+  /// Obtener estadísticas del dashboard
+  static Future<Map<String, dynamic>> getAdminDashboard() async {
+    return await get('/admin/dashboard');
+  }
+
+  /// Obtener datos para el reporte
+  static Future<Map<String, dynamic>> getReportData({int? userId}) async {
+    final endpoint = userId != null
+        ? '/admin/report?userId=$userId'
+        : '/admin/report';
+    return await get(endpoint);
+  }
+
+  // INTELIGENCIA ARTIFICIAL
+  /// Chat con IA
+  static Future<String> chatIA(String mensaje) async {
+    final data = await post('/ai/chat', {'mensaje': mensaje});
+    return data['respuesta'] ?? 'Sin respuesta';
+  }
+
+  /// Generar informe inteligente
+  static Future<Map<String, dynamic>> generarInformeIA({int? userId}) async {
+    return await post('/ai/reporte', {if (userId != null) 'userId': userId});
   }
 }
