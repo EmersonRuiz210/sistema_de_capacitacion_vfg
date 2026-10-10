@@ -6,7 +6,7 @@ class AppConfig {
 
   static const String baseUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://192.168.0.16:3000/api',
+    defaultValue: 'http://192.168.174.144:3000/api',
   );
 
   /// Nombre de la app
