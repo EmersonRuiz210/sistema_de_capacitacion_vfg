@@ -8,7 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import '../config/app_config.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.0.14:3000/api';
+  static const String baseUrl =
+      'https://backend-app-capacitacion.onrender.com/api';
 
   static String? _token;
 
