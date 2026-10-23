@@ -19,6 +19,13 @@ class AdminUserDetailScreen extends StatefulWidget {
   State<AdminUserDetailScreen> createState() => _AdminUserDetailScreenState();
 }
 
+/// Convierte cualquier valor a double de forma segura
+double _toDouble(dynamic value) {
+  if (value == null) return 0;
+  if (value is num) return value.toDouble();
+  return double.tryParse(value.toString()) ?? 0;
+}
+
 class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
   Map<String, dynamic>? detail;
   bool isLoading = true;
@@ -320,7 +327,7 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
   }
 
   Widget _buildProgressCard(dynamic p) {
-    final progreso = (p['promedio_progreso'] as num?)?.toDouble() ?? 0;
+    final progreso = _toDouble(p['promedio_progreso']);
     final colorMap = {
       1: const Color(0xFF1A5276),
       2: const Color(0xFF27AE60),
@@ -385,8 +392,10 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
   }
 
   Widget _buildAttemptCard(dynamic intento) {
-    final puntaje = (intento['puntaje_obtenido'] as num?)?.toDouble() ?? 0;
-    final puntajeMax = (intento['puntaje_maximo'] as num?)?.toDouble() ?? 100;
+    final puntaje = _toDouble(intento['puntaje_obtenido']);
+    final puntajeMax = _toDouble(intento['puntaje_maximo']) == 0
+        ? 100.0
+        : _toDouble(intento['puntaje_maximo']);
     final porcentaje = puntajeMax > 0
         ? (puntaje / puntajeMax * 100).round()
         : 0;
@@ -416,6 +425,7 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
             color: statusColor,
           ),
         ),
+        // ✅ Usamos _formatString en lugar de _toStr
         title: Text(_formatString(intento['evaluacion_titulo'])),
         subtitle: Text(
           '${_formatString(intento['curso_titulo'])} • Intento #${intento['intento_numero']}',

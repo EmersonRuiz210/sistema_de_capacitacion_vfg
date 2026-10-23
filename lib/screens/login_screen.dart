@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../utils/colors.dart';
 import 'register_screen.dart';
+import 'admin_dashboard_screen.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -34,25 +35,34 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ApiService.login(
+      final data = await ApiService.login(
         _emailController.text.trim(),
         _passwordController.text,
       );
 
       if (!mounted) return;
 
-      // Navegar al menú principal
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-      );
+      // ✅ VERIFICAR ROL PARA REDIRIGIR
+      final user = data['user'];
+      final rol = user?['rol'] ?? user?['nombre_rol'] ?? '';
+
+      if (rol == 'admin' || rol == 'asesor') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MainScreen()),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceAll('Exception: ', '')),
           backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
         ),
       );
     } finally {

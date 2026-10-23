@@ -20,8 +20,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _telefonoController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _codigoController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  int _rolSeleccionado = 3; // 3 = Cliente por defecto
 
   @override
   void dispose() {
@@ -30,6 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _telefonoController.dispose();
     _passwordController.dispose();
+    _codigoController.dispose();
     super.dispose();
   }
 
@@ -48,6 +51,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         telefono: _telefonoController.text.trim().isEmpty
             ? null
             : _telefonoController.text.trim(),
+        idRol: _rolSeleccionado,
+        codigoInvitacion:
+            _rolSeleccionado !=
+                3 // Si no es cliente, envía el código
+            ? _codigoController.text.trim()
+            : null,
       );
 
       if (!mounted) return;
@@ -161,6 +170,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
+              const SizedBox(height: 16),
+
+              // ✅ SELECTOR DE ROL
+              DropdownButtonFormField<int>(
+                value: _rolSeleccionado,
+                decoration: const InputDecoration(
+                  labelText: 'Tipo de usuario',
+                  prefixIcon: Icon(Icons.badge_outlined),
+                  border: OutlineInputBorder(),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 3, child: Text('Cliente')),
+                  DropdownMenuItem(value: 2, child: Text('Asesor')),
+                  DropdownMenuItem(value: 1, child: Text('Administrador')),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _rolSeleccionado = value;
+                      _codigoController.clear(); // Limpiar si cambia de rol
+                    });
+                  }
+                },
+              ),
+
+              // CAMPO DE CÓDIGO SECRETO (Solo aparece si es Admin o Asesor)
+              if (_rolSeleccionado != 3) ...[
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _codigoController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Código de Invitación',
+                    helperText: 'Requerido para Asesores y Admins',
+                    prefixIcon: Icon(Icons.vpn_key),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (v) {
+                    if (_rolSeleccionado != 3 && (v == null || v.isEmpty)) {
+                      return 'Ingresa el código de invitación';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+
               const SizedBox(height: 16),
 
               // Password-Contraseña

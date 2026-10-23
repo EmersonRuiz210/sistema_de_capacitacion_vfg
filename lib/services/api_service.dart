@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import '../config/app_config.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.174.144:3000/api';
+  static const String baseUrl = 'http://192.168.0.14:3000/api';
 
   static String? _token;
 
@@ -117,6 +117,8 @@ class ApiService {
     required String email,
     required String password,
     String? telefono,
+    int? idRol, //
+    String? codigoInvitacion,
   }) async {
     final data = await post('/auth/register', {
       'nombres': nombres,
@@ -124,6 +126,9 @@ class ApiService {
       'email': email,
       'password': password,
       'telefono': telefono,
+      if (idRol != null) 'id_rol': idRol,
+      if (codigoInvitacion != null && codigoInvitacion.isNotEmpty)
+        'codigo_invitacion': codigoInvitacion,
     });
     await saveToken(data['token']);
 

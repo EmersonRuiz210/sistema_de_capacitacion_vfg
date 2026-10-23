@@ -7,7 +7,6 @@ import 'topic_list_screen.dart';
 import 'login_screen.dart';
 import 'progress_screen.dart';
 import 'achievements_screen.dart';
-import 'admin_dashboard_screen.dart';
 import 'ai_chat_screen.dart';
 import '../models/financial.dart';
 import '../models/ambiental.dart';
@@ -110,23 +109,6 @@ class _MainScreenState extends State<MainScreen> {
               );
             },
           ),
-          //Botón de Admin
-          if (userData != null &&
-              (userData!['rol'] == 'admin' ||
-                  userData!['nombre_rol'] == 'admin'))
-            IconButton(
-              icon: const Icon(Icons.admin_panel_settings),
-              tooltip: 'Panel de Admin',
-              color: Colors.orange[800],
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const AdminDashboardScreen(),
-                  ),
-                ).then((_) => _loadData());
-              },
-            ),
 
           IconButton(
             icon: const Icon(Icons.emoji_events),

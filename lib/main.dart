@@ -1,18 +1,15 @@
-// PUNTO DE ENTRADA DE LA APLICACIÓN
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart';
+import 'screens/admin_dashboard_screen.dart'; // Importamos el panel de admin
 import 'services/api_service.dart';
 import 'utils/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Cargar token guardado (si existe)
   await ApiService.loadToken();
-
   runApp(const FinancialEducationApp());
 }
 
@@ -38,8 +35,59 @@ class FinancialEducationApp extends StatelessWidget {
           foregroundColor: AppColors.primaryBlue,
         ),
       ),
-      // Si hay token → MainScreen, si no → LoginScreen
-      home: ApiService.isLoggedIn ? const MainScreen() : const LoginScreen(),
+      // ✅ USAMOS UN WIDGET QUE DECIDE LA PANTALLA INICIAL
+      home: const InitialRouter(),
     );
+  }
+}
+
+/// Widget que decide a dónde ir al abrir la app
+class InitialRouter extends StatefulWidget {
+  const InitialRouter({super.key});
+
+  @override
+  State<InitialRouter> createState() => _InitialRouterState();
+}
+
+class _InitialRouterState extends State<InitialRouter> {
+  bool _loading = true;
+  Widget _initialScreen = const LoginScreen();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkRole();
+  }
+
+  Future<void> _checkRole() async {
+    if (!ApiService.isLoggedIn) {
+      // No hay sesión -> Login
+      setState(() {
+        _initialScreen = const LoginScreen();
+        _loading = false;
+      });
+      return;
+    }
+
+    // Hay sesión, verificar rol
+    final user = await ApiService.getUserData();
+    final rol = user?['rol'] ?? user?['nombre_rol'] ?? '';
+
+    setState(() {
+      if (rol == 'admin' || rol == 'asesor') {
+        _initialScreen = const AdminDashboardScreen();
+      } else {
+        _initialScreen = const MainScreen();
+      }
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    return _initialScreen;
   }
 }
